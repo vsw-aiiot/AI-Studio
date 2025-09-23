@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Register | KUCHU_AI Studio{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+  <h1 class="text-2xl font-semibold mb-4">Register</h1>
+
+  <!-- SSO Buttons -->
+  <div class="space-y-2 mb-6">
+    <a href="/auth/sso/google/login" class="w-full inline-flex items-center justify-center bg-white border border-gray-300 rounded py-2 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
+      <img src="/static/icons/google-icon.svg" alt="Google" class="w-5 h-5 mr-2" />
+      <span class="text-sm font-medium text-gray-800 dark:text-white">Sign up with Google</span>
+    </a>
+    <!-- You can add more SSO providers here -->
+  </div>
+
+  <!-- OR Divider -->
+  <div class="flex items-center my-4">
+    <hr class="flex-grow border-gray-300 dark:border-gray-600" />
+    <span class="px-3 text-sm text-gray-500 dark:text-gray-400">or register with email</span>
+    <hr class="flex-grow border-gray-300 dark:border-gray-600" />
+  </div>
+
+  <!-- Email/Password Registration Form -->
+  <form method="POST" action="/auth/register" class="space-y-4">
+    <div>
+      <label for="email" class="block text-sm font-medium">Email</label>
+      <input type="email" id="email" name="email" required
+             class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600" />
+    </div>
+    <div>
+      <label for="password" class="block text-sm font-medium">Password</label>
+      <input type="password" id="password" name="password" required
+             class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600" />
+    </div>
+    <button type="submit"
+            class="w-full bg-primary text-white py-2 rounded hover:bg-blue-600">
+      Register
+    </button>
+  </form>
+
+  <p class="text-sm mt-4">
+    Already have an account? <a href="/auth/login" class="text-primary">Login</a>
+  </p>
+</div>
+{% endblock %}

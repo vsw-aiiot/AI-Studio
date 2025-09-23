@@ -1,0 +1,14 @@
+{
+  "user_id": "dev001",
+  "active_workspace": "project-vva",
+  "last_conversation": {
+    "timestamp": "2025-07-11T12:30:00",
+    "topic": "Bluetooth mic selection",
+    "summary": "User configured Bluetooth mic for Raspberry Pi assistant."
+  },
+  "preferences": {
+    "theme": "dark",
+    "language": "en",
+    "notifications": true
+  }
+}
