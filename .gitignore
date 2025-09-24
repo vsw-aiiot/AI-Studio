@@ -16,3 +16,4 @@
 *.h
 */site-packages/*
 /site-packages/
+/.teams
