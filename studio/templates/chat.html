@@ -13,25 +13,28 @@
   </div>
 {% endif %}
 
-<!-- MAIN CHAT AREA -->
-<div id="mainContent" class="w-full pb-32 transition-all duration-200 overflow-y-auto">
+<!-- MAIN CHAT AREA (full-width with comfy gutters) -->
+<div id="mainContent"
+     class="w-full max-w-full px-3 sm:px-5 md:px-8 lg:px-10 pb-36 transition-all duration-200 overflow-y-auto">
 
   {% if conversation %}
     {% for entry in conversation %}
 
       <!-- USER MESSAGE -->
       {% if entry.role == "user" %}
-      <div class="flex items-start gap-3 mb-4">
-        <div class="flex-1">
-          <div class="flex items-center justify-between mb-1">
+      <div class="chat-row chat-row-user flex justify-end mb-4">
+        <div class="max-w-[95%] md:max-w-[78%] lg:max-w-[72%]">
+          <div class="flex items-center justify-end gap-2 mb-1">
+            <time class="text-[11px] text-gray-400">{{ entry.ts or '' }}</time>
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">You</div>
-              <div class="text-xs text-gray-500">You</div>
+              <span class="sr-only">User</span>
+              <div class="w-8 h-8 rounded-full bg-blue-500 text-white grid place-items-center text-xs font-semibold">You</div>
             </div>
-            <div class="text-xs text-gray-400">{{ entry.ts or '' }}</div>
           </div>
-          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-blue-500 max-w-full sm:max-w-[90%] md:max-w-[75%]">
-            <div class="whitespace-pre-wrap leading-relaxed text-sm">{{ entry.content | e }}</div>
+          <div
+            class="bubble bubble-user animate-in-right bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-2xl shadow-lg
+                   px-4 py-3 leading-relaxed text-[15px]">
+            <div class="whitespace-pre-wrap">{{ entry.content | e }}</div>
           </div>
         </div>
       </div>
@@ -39,45 +42,35 @@
 
       <!-- ASSISTANT MESSAGE -->
       {% if entry.role == "assistant" %}
-      <div class="flex items-start gap-3 mb-4">
-        <div class="flex-1">
-          <!-- <div class="flex items-center justify-between mb-1">
+      <div class="chat-row chat-row-ai flex justify-start mb-4">
+        <div class="max-w-[95%] md:max-w-[78%] lg:max-w-[72%]">
+          <div class="flex items-center justify-start gap-2 mb-1">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">AI</div>
-              <div class="text-xs text-gray-500">{{ agent | default('AI') }}</div>
+              <span class="sr-only">Assistant</span>
+              <div class="w-8 h-8 rounded-full bg-emerald-600 text-white grid place-items-center text-xs font-semibold">AI</div>
+              <div class="text-[11px] text-gray-500">{{ agent | default('AI') }}</div>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="text-xs text-gray-400">{{ entry.ts or '' }}</div>
-              <button class="copy-btn text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200" data-content="{{ entry.content | e }}">Copy</button>
-            </div>
-          </div> -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1 w-fit sm:w-[75%]">
-            <div class="flex items-center gap-2 mb-1 sm:mb-0">
-              <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">AI</div>
-              <div class="text-xs text-gray-500">{{ agent | default('AI') }}</div>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-gray-400">
-              <span>{{ entry.ts or '' }}</span>
-              <button class="copy-btn px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">Copy</button>
-            </div>
+            <time class="text-[11px] text-gray-400">{{ entry.ts or '' }}</time>
           </div>
 
-          <div class="ai-msg bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow border-l-4 border-green-500 max-w-full sm:max-w-[90%] md:max-w-[75%]">
-            <div class="mt-2 whitespace-pre-wrap leading-relaxed text-sm">{{ entry.content | e }}</div>
+          <div
+            class="bubble bubble-ai animate-in-left bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                   rounded-2xl shadow border border-gray-100 dark:border-gray-700 px-4 py-3 leading-relaxed text-[15px]">
+            <div class="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">{{ entry.content | e }}</div>
           </div>
 
-          <!-- QUICK ACTION BUTTONS -->
-          <div class="mt-2 flex flex-wrap gap-2 text-xs sm:text-sm">
-            <button class="btn-like px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👍</button>
-            <button class="btn-dislike px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👎</button>
-            <button class="btn-regenerate px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">↺ Regenerate</button>
-            <button class="btn-md px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📄 MD</button>
-            <button class="btn-doc px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📝 Doc</button>
-            <button class="btn-edit px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">✏️ Edit</button>
-            <button class="btn-save px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">💾 Save</button>
-            <button class="btn-del px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">🗑️ Delete</button>
-            <button class="btn-pin px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📌 Context</button>
-            <button class="btn-like px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">[Copy]</button>
+          <!-- QUICK ACTIONS -->
+          <div class="mt-2 flex flex-wrap gap-1.5 text-xs">
+            <button class="btn-like quick-btn">👍</button>
+            <button class="btn-dislike quick-btn">👎</button>
+            <button class="btn-regenerate quick-btn">↺ Regenerate</button>
+            <button class="btn-md quick-btn">📄 MD</button>
+            <button class="btn-doc quick-btn">📝 Doc</button>
+            <button class="btn-edit quick-btn">✏️ Edit</button>
+            <button class="btn-save quick-btn">💾 Save</button>
+            <button class="btn-del quick-btn">🗑️ Delete</button>
+            <button class="btn-pin quick-btn">📌 Context</button>
+            <button class="copy-btn quick-btn">📋 <span class="hidden sm:inline">Copy</span></button>
           </div>
         </div>
       </div>
@@ -88,364 +81,237 @@
     <div class="text-center text-gray-500 py-12">No messages yet — say hi 👋</div>
   {% endif %}
 </div>
+
+<!-- COMPOSER -->
 <form id="chatForm"
       method="post"
       action="/chat/model/{{ agent }}/send"
-      class="fixed bottom-0 left-0 md:left-64 right-0 bg-white dark:bg-gray-800 p-3 sm:p-4 flex gap-2 sm:gap-3 border-t border-gray-200 dark:border-gray-700 z-50 transition-all duration-200">
-<!-- <form id="chatForm"
-      method="post"
-      action="/chat/model/{{ agent }}/send"
-      class="fixed bottom-0 left-0 md:left-64 right-0 md:right-16 bg-white dark:bg-gray-800 p-3 sm:p-4 flex gap-2 sm:gap-3 border-t border-gray-200 dark:border-gray-700 z-50"> -->
+      class="fixed bottom-0 left-0 right-0 md:left-64 bg-white/90 dark:bg-gray-900/90 backdrop-blur
+             px-3 sm:px-5 md:px-8 lg:px-10 py-3 sm:py-4 border-t border-gray-200 dark:border-gray-700 z-50">
 
-  <!-- Hidden conversation id if present -->
   {% if conversation_id %}
     <input type="hidden" name="conversation_id" value="{{ conversation_id }}">
   {% endif %}
-
-  <!-- Conversation name only when creating new -->
   {% if not conversation_id %}
-    <input type="text"
-           name="conversation_name"
-           placeholder="Name this conversation..."
-           required
-           class="px-4 py-2 w-48 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <input type="text" name="conversation_name" placeholder="Name this conversation..." required
+           class="mb-2 px-4 py-2 w-64 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm
+                  text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
   {% else %}
     <input type="hidden" name="conversation_name" value="{{ conversations|length > 0 and conversations[-1].name or '' }}">
   {% endif %}
 
+  <div class="flex gap-2">
+    <textarea name="user_input" id="user_input" rows="1" placeholder="Send a message…"
+              required
+              class="flex-1 px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900
+                     text-sm text-gray-800 dark:text-gray-100 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500
+                     transition-[height] duration-150 will-change-auto"></textarea>
 
-  <textarea name="user_input"
-            id="user_input"
-            rows="2"
-            placeholder="Send a message..."
-            required
-            class="px-4 py-2 flex-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150"></textarea>
-
-  <button id="sendBtn"
-          type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2 transition-colors duration-200">
-    <span class="text-xl">➤</span>
-    <span id="sendSpinner" class="hidden animate-spin text-sm">⏳</span>
-  </button>
+    <button id="sendBtn" type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:translate-y-[1px]
+                   flex items-center gap-2 transition">
+      <span class="text-lg">➤</span>
+      <span id="sendSpinner" class="hidden animate-spin text-sm">⏳</span>
+    </button>
+  </div>
 </form>
 
 <!-- RIGHT SIDEBAR -->
-  <!-- <aside id="rightSidebar"
-    class="fixed top-[56px] right-0 bottom-0 
-          w-64 md:w-64  /* desktop fixed width */
-          bg-white dark:bg-gray-900 shadow-lg border-l border-gray-300 dark:border-gray-700 
-          p-4 flex flex-col gap-4 transition-transform duration-300 
-          transform translate-x-full md:translate-x-0 z-40 md:relative"> -->
-  <aside id="rightSidebar"
-    class="fixed top-[56px] right-0 bottom-0 
-            w-64 bg-white dark:bg-gray-900 shadow-lg border-l border-gray-300 dark:border-gray-700 
-            p-4 flex flex-col gap-4 transition-transform duration-300 
-            transform translate-x-full z-40">
-  <!-- <button id="toggleRightSidebarBtn"
-        class="absolute -left-8 top-1/2 -translate-y-1/2 bg-gray-700 text-white rounded-l px-2 py-1 text-sm hover:bg-gray-800">
-      «
-  </button> -->
+<aside id="rightSidebar"
+  class="fixed top-[56px] right-0 bottom-0 w-64 bg-white dark:bg-gray-900 shadow-lg border-l border-gray-200 dark:border-gray-800
+         p-4 flex flex-col gap-4 transition-transform duration-300 transform translate-x-full z-40">
   <button id="toggleRightSidebarBtn"
-    class="absolute -left-8 top-1/2 -translate-y-1/2 bg-gray-700 text-white rounded-l px-2 py-1 text-sm hover:bg-gray-800">
+          class="absolute -left-8 top-1/2 -translate-y-1/2 bg-gray-700 text-white rounded-l px-2 py-1 text-sm hover:bg-gray-800"
+          aria-label="Toggle studio configuration panel">
     «
   </button>
-  <h1 class="text-lg uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-      Studio Configuration
-  </h1>
-  <h3 class="text-xs font-semibold text-gray-800 dark:text-white">Tools</h3>
 
+  <h1 class="text-sm tracking-wide uppercase font-semibold text-gray-500 dark:text-gray-400">Studio Configuration</h1>
+
+  <h3 class="text-xs font-semibold text-gray-800 dark:text-white">Tools</h3>
   <div class="flex items-center gap-2">
-    <!-- Import -->
     <form method="POST" action="/tools/context_manager/context/import" enctype="multipart/form-data">
-      <label class="cursor-pointer px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 rounded shadow">
+      <label class="cursor-pointer px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600
+                    text-gray-800 dark:text-gray-100 rounded shadow">
         📥
         <input type="file" name="file" accept=".json" class="hidden" onchange="this.form.submit()">
       </label>
     </form>
-
-    <!-- Export -->
     <a href="/tools/context_manager/context/export"
        class="px-2 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded shadow">📤</a>
   </div>
-  <!-- Temperature Control -->
-  <h3 class="text-xs uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-      Creativity - Temparature
-  </h3>
-  <div class="control-section">
-    <label for="temperature-slider">Creativity (Temperature)</label>
+
+  <h3 class="text-xs uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400">Creativity — Temperature</h3>
+  <div class="flex items-center gap-2">
     <input type="range" id="temperature-slider" min="0" max="1" step="0.01" value="{{ temperature|default(0.7) }}">
-    <span id="temp-value">{{ temperature|default(0.7) }}</span>
-  </div>z
-  <!-- System Prompt Editor -->
-  <h3 class="text-xs uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-      Edit Prompt
-  </h3>
-  <div class="control-section">
-    <label for="system-prompt">System Prompt</label>
-    <textarea id="system-prompt" rows="6">{{ system_prompt|default("You are a helpful assistant.") }}</textarea>
-    <button id="save-system-prompt">Save</button>
+    <span id="temp-value" class="text-xs">{{ temperature|default(0.7) }}</span>
+  </div>
+
+  <h3 class="text-xs uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400">Edit Prompt</h3>
+  <div class="flex flex-col gap-2">
+    <label for="system-prompt" class="text-xs text-gray-500 dark:text-gray-400">System Prompt</label>
+    <textarea id="system-prompt" rows="6"
+              class="px-2 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs
+                     text-gray-800 dark:text-gray-100">{{ system_prompt|default("You are a helpful assistant.") }}</textarea>
+    <button id="save-system-prompt"
+            class="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded text-xs hover:bg-gray-300 dark:hover:bg-gray-600 w-fit">
+      Save
+    </button>
   </div>
 </aside>
-<div id="sidebarBackdrop" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+<div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
 <style>
   :root {
-    --header-h: 56px;               /* Height of the fixed header */
-    --sidebar-w: 16rem;             /* Width of sidebar when expanded */
-    --transition-dur: 0.3s;
+    --header-h: 56px;
+    --sidebar-w: 16rem;
+    --transition-dur: .3s;
   }
 
-  /* Main content layout fix under sticky header */
-  #mainContent {
-    max-width: 100%;
-    padding-top: calc(var(--header-h) + 0.75rem);
-    scroll-padding-top: var(--header-h);
-    transition: width var(--transition-dur) ease;
-    overflow-x: hidden;
+  /* Content spacing & scrolling */
+  #mainContent { padding-top: calc(var(--header-h) + .5rem); scroll-padding-top: var(--header-h); }
+
+  /* Quick action buttons (shared) */
+  .quick-btn {
+    padding: .35rem .6rem;
+    border-radius: .6rem;
+    background: transparent;
+    transition: background .15s ease;
+  }
+  .quick-btn:hover { background: rgba(59,130,246,.10); }
+
+  /* Message bubbles */
+  .bubble { position: relative; word-wrap: break-word; }
+  .bubble-user { border-top-right-radius: .4rem; }
+  .bubble-ai   { border-top-left-radius: .4rem; }
+
+  /* Animations */
+  @keyframes slideFadeLeft {
+    from { opacity: 0; transform: translateX(-12px) translateY(4px); }
+    to   { opacity: 1; transform: translateX(0) translateY(0); }
+  }
+  @keyframes slideFadeRight {
+    from { opacity: 0; transform: translateX(12px) translateY(4px); }
+    to   { opacity: 1; transform: translateX(0) translateY(0); }
+  }
+  .animate-in-left  { animation: slideFadeLeft .28s ease-out both; }
+  .animate-in-right { animation: slideFadeRight .28s ease-out both; }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in-left, .animate-in-right { animation: none !important; }
+    * { scroll-behavior: auto !important; }
   }
 
-  /* Remove unintentional spacing on first child */
-  #mainContent > *:first-child {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-
-  /* Prevent empty flex containers from affecting layout */
-  body > .flex:empty {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Sidebar collapse behavior */
-  #mainContent.right-collapsed {
-    width: calc(100% - var(--sidebar-w));
-  }
-
-  /* Modern fade-in on hover */
-  .group-hover\:flex {
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    opacity: 0;
-    transform: translateY(2px);
-  }
-
-  .group:hover .group-hover\:flex {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Optional: Smooth shadow under header (gives crisp feel) */
-  header {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    z-index: 10;
-  }
-
-  /* Optional: Slight polish for buttons (modern flat style) */
-  button {
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-
-  button:hover {
-    background-color: #f3f4f6;
-    color: #111827;
-  }
-
-  .input-container {
-  display: flex;
-  align-items: flex-end;
-  padding: 0.5rem;
-  border-top: 1px solid #ccc;
-  background: #fff;
-  position: sticky;
-  bottom: 0;
-}
-
-  #userInput:focus {
-    outline: none;
-    background: #fff;
-  }
-
-  #send-button {
-    margin-left: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #3f83f8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  #send-button:hover {
-    background: #2f6fe4;
-  }
-  #userinput {
-    height: auto;
-    min-height: 2.5rem;
-    max-height: 12rem;
-    overflow-y: hidden;
-    resize: none;
-    line-height: 1.4;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    transition: height 0.2s ease;
-    box-sizing: border-box;
-  }
-  /* Sidebar behavior */
-  #rightSidebar {
-    max-width: 100%;
-  }
-
-  /* On mobile: sidebar overlays (full screen) */
-  @media (max-width: 767px) {
-    #rightSidebar {
-      width: 100% !important;
-      position: fixed !important;
-      top: var(--header-h);
-      right: 0;
-      bottom: 0;
-    }
-    #mainContent {
-      margin-right: 0 !important;
-      width: 100% !important;
-    }
-  }
-
-  /* On desktop: sidebar pushes main content */
+  /* Desktop push when right sidebar is open */
   @media (min-width: 768px) {
-    #mainContent.right-collapsed {
-      width: calc(100% - var(--sidebar-w));
-    }
+    .right-open #mainContent { margin-right: var(--sidebar-w); }
+    .right-open #chatForm   { right: var(--sidebar-w); }
   }
-
-.copy-btn {
-  transition: all 0.2s ease;
-}
-.copy-btn:hover {
-  background-color: #3b82f6; /* Tailwind blue-500 */
-  color: #fff;
-}
-
 </style>
 {% endblock %}
 
 {% block script_extra %}
-<!-- PrismJS for Syntax Highlighting -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   // ---- THEME ----
-  if (localStorage.getItem("theme") === "dark") {
-    document.documentElement.classList.add("dark");
-  }
+  if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark");
 
   // ---- DOM HOOKS ----
-  const chatForm   = document.getElementById("chatForm");
-  const userInput  = document.getElementById("user_input");
-  const mainContent= document.getElementById("mainContent");
-  const sendSpinner= document.getElementById("sendSpinner");
-  const rightBar   = document.getElementById("rightSidebar");
-  const rightBtn   = document.getElementById("toggleRightSidebarBtn");
-  const backdrop = document.getElementById("sidebarBackdrop");
+  const chatForm    = document.getElementById("chatForm");
+  const userInput   = document.getElementById("user_input");
+  const mainContent = document.getElementById("mainContent");
+  const sendSpinner = document.getElementById("sendSpinner");
+  const rightBar    = document.getElementById("rightSidebar");
+  const rightBtn    = document.getElementById("toggleRightSidebarBtn");
+  const backdrop    = document.getElementById("sidebarBackdrop");
 
-  // ---- SIDEBAR LOGIC ----
+  // ---- RIGHT SIDEBAR STATE ----
   const RIGHT_KEY = "ui:rightCollapsed";
-  const getFlag = (k, d = true) => (localStorage.getItem(k) ?? (d ? "1" : "0")) === "1";
-  const setFlag = (k, v) => localStorage.setItem(k, v ? "1" : "0");
+  const getFlag = (k, d=true) => (localStorage.getItem(k) ?? (d ? "1":"0")) === "1";
+  const setFlag = (k, v) => localStorage.setItem(k, v ? "1":"0");
 
   function applySidebarState() {
     const isRightCollapsed = getFlag(RIGHT_KEY, true);
     const isMobile = window.innerWidth < 768;
 
-    // --- Right Sidebar Logic ---
     if (isRightCollapsed) {
       rightBar.classList.add("translate-x-full");
-      rightBtn.textContent = "«"; // Show "open" icon
+      document.body.classList.remove("right-open");
+      rightBtn.textContent = "«";
     } else {
       rightBar.classList.remove("translate-x-full");
-      rightBtn.textContent = "»"; // Show "close" icon
+      document.body.classList.add("right-open");
+      rightBtn.textContent = "»";
     }
 
-    // --- Main Content and Form Margin Logic ---
     if (isMobile) {
-      // On mobile, sidebars are overlays. Content is always full-width.
       mainContent.style.marginRight = '0';
       chatForm.style.right = '0';
-      // Show backdrop only if a sidebar is open
       backdrop.classList.toggle('hidden', isRightCollapsed);
     } else {
-      // On desktop, the right sidebar "pushes" the content.
-      const rightMargin = isRightCollapsed ? '0' : '16rem'; // 16rem = w-64
-      mainContent.style.marginRight = rightMargin;
-      chatForm.style.right = rightMargin;
-      backdrop.classList.add('hidden'); // Never show backdrop on desktop
+      backdrop.classList.add('hidden');
     }
   }
 
-  // --- Event Listeners ---
-  if (rightBtn) {
-    rightBtn.addEventListener("click", () => {
-      setFlag(RIGHT_KEY, !getFlag(RIGHT_KEY, true));
-      applySidebarState();
-    });
-  }
-
-  // Close sidebar if backdrop is clicked on mobile
-  backdrop.addEventListener('click', () => {
-    setFlag(RIGHT_KEY, true); // Collapse the sidebar
+  rightBtn?.addEventListener("click", () => {
+    setFlag(RIGHT_KEY, !getFlag(RIGHT_KEY, true));
     applySidebarState();
   });
-
-  // Re-apply styles on window resize
-  window.addEventListener('resize', applySidebarState);
-
-  // Initial state setup
+  backdrop?.addEventListener("click", () => { setFlag(RIGHT_KEY, true); applySidebarState(); });
+  window.addEventListener("resize", applySidebarState);
   applySidebarState();
 
   // ---- ENTER TO SEND ----
-  if (userInput) {
-    userInput.addEventListener("keydown", e => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        chatForm?.dispatchEvent(new Event("submit", { cancelable: true }));
-      }
-    });
+  userInput?.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      chatForm?.dispatchEvent(new Event("submit", { cancelable: true }));
+    }
+  });
+
+  // ---- AUTO-RESIZE INPUT ----
+  const capPx = 192; // 12rem
+  function autoSize(el) {
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, capPx) + "px";
   }
+  userInput && (userInput.addEventListener("input", () => autoSize(userInput)),
+                userInput.addEventListener("blur", () => { if (!userInput.value.trim()) userInput.style.height = "2.5rem"; }),
+                autoSize(userInput));
 
   // ---- AJAX SUBMIT ----
-  if (chatForm) {
-  chatForm.addEventListener("submit", async (e) => {
+  chatForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const userText = (userInput.value || '').trim();
     if (!userText) return;
 
     appendUserBubble(userText);
     userInput.value = '';
+    autoSize(userInput);
     adjustBottomPadding();
     scrollToBottom();
     sendSpinner.classList.remove('hidden');
 
     const formData = new FormData(chatForm);
-    formData.set('user_input', userText);  // always ensure this is set
-
-    // conversation_id is already in the form as hidden input
+    formData.set('user_input', userText);
     const url = chatForm.getAttribute("action");
 
     try {
       const res = await fetch(url, { method: "POST", body: formData });
       const data = await res.json();
-
       appendAIBubble(data.ai || "No response");
       wireCopyButtons();
       wireActionButtons();
       formatTripleBackticks();
+      Prism.highlightAll();
       scrollToBottom();
 
-      // If backend returns conversation_id (for new convos), inject into form
       if (data.conversation_id) {
         let hidden = chatForm.querySelector('input[name="conversation_id"]');
         if (!hidden) {
@@ -456,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         hidden.value = data.conversation_id;
       }
-
     } catch (err) {
       console.error(err);
       appendAIBubble("Error contacting model.");
@@ -465,23 +330,24 @@ document.addEventListener("DOMContentLoaded", () => {
       sendSpinner.classList.add('hidden');
     }
   });
-}
 
+  // ---- RENDER HELPERS ----
+  function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
 
   function appendUserBubble(text) {
     const ts = new Date().toLocaleTimeString();
     const html = `
-      <div class="flex items-start gap-3 mb-4">
-        <div class="flex-1">
-          <div class="flex items-center justify-between mb-1">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">You</div>
-              <div class="text-xs text-gray-500">You</div>
-            </div>
-            <div class="text-xs text-gray-400">${ts}</div>
+      <div class="chat-row chat-row-user flex justify-end mb-4 will-change-transform">
+        <div class="max-w-[95%] md:max-w-[78%] lg:max-w-[72%]">
+          <div class="flex items-center justify-end gap-2 mb-1">
+            <time class="text-[11px] text-gray-400">${ts}</time>
+            <div class="w-8 h-8 rounded-full bg-blue-500 text-white grid place-items-center text-xs font-semibold">You</div>
           </div>
-          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-blue-500">
-            <div class="whitespace-pre-wrap leading-relaxed">${escapeHtml(text)}</div>
+          <div class="bubble bubble-user animate-in-right bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-2xl shadow-lg px-4 py-3 text-[15px]">
+            <div class="whitespace-pre-wrap">${esc(text)}</div>
           </div>
         </div>
       </div>`;
@@ -491,64 +357,58 @@ document.addEventListener("DOMContentLoaded", () => {
   function appendAIBubble(aiText) {
     const ts = new Date().toLocaleTimeString();
     const html = `
-      <div class="flex items-start gap-3 mb-4">
-        <div class="flex-1">
-          <div class="flex items-center justify-between mb-1">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">AI</div>
-              <div class="text-xs text-gray-500">{{ agent | default('AI') }}</div>
-            </div>
-            <div class="flex items-center gap-2">
-              <div class="text-xs text-gray-400">${ts}</div>
-              <button class="copy-btn text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200" data-content="${escapeHtml(aiText)}">Copy</button>
-            </div>
+      <div class="chat-row chat-row-ai flex justify-start mb-4 will-change-transform">
+        <div class="max-w-[95%] md:max-w-[78%] lg:max-w-[72%]">
+          <div class="flex items-center justify-start gap-2 mb-1">
+            <div class="w-8 h-8 rounded-full bg-emerald-600 text-white grid place-items-center text-xs font-semibold">AI</div>
+            <div class="text-[11px] text-gray-500">{{ agent | default('AI') }}</div>
+            <time class="text-[11px] text-gray-400">${ts}</time>
           </div>
-          <div class="ai-msg bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow border-l-4 border-green-500">
-            <div class="mt-2 whitespace-pre-wrap leading-relaxed">${escapeHtml(aiText)}</div>
+          <div class="ai-msg bubble bubble-ai animate-in-left bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-2xl shadow border border-gray-100 dark:border-gray-700 px-4 py-3 text-[15px]">
+            <div class="content whitespace-pre-wrap">${esc(aiText)}</div>
           </div>
-          <div class="mt-2 flex gap-2 text-sm">
-            <button class="btn-like px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👍</button>
-            <button class="btn-dislike px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👎</button>
-            <button class="btn-regenerate px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">↺ Regenerate</button>
+          <div class="mt-2 flex flex-wrap gap-1.5 text-xs">
+            <button class="btn-like quick-btn">👍</button>
+            <button class="btn-dislike quick-btn">👎</button>
+            <button class="btn-regenerate quick-btn">↺ Regenerate</button>
+            <button class="btn-md quick-btn">📄 MD</button>
+            <button class="btn-doc quick-btn">📝 Doc</button>
+            <button class="btn-edit quick-btn">✏️ Edit</button>
+            <button class="btn-save quick-btn">💾 Save</button>
+            <button class="btn-del quick-btn">🗑️ Delete</button>
+            <button class="btn-pin quick-btn">📌 Context</button>
+            <button class="copy-btn quick-btn" data-content="${esc(aiText)}">📋 <span class="hidden sm:inline">Copy</span></button>
           </div>
         </div>
       </div>`;
     mainContent.insertAdjacentHTML('beforeend', html);
   }
 
-  function escapeHtml(s) {
-    if (s === null || s === undefined) return '';
-    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
-
-  function scrollToBottom() {
-    mainContent.scrollTop = mainContent.scrollHeight;
-  }
-
+  // ---- CODE FENCE FORMATTER ----
   function formatTripleBackticks() {
-    const blocks = document.querySelectorAll(".ai-msg > div");
+    const blocks = document.querySelectorAll(".ai-msg .content");
     const fence  = /```(\w+)?\n([\s\S]*?)```/g;
     blocks.forEach(node => {
       const original = node.textContent || '';
       if (!original.includes("```")) return;
       let last = 0, html = "", m;
       while ((m = fence.exec(original)) !== null) {
-        html += escapeHtml(original.slice(last, m.index)).replace(/\n/g, "<br/>");
-        //html += `<pre class="bg-gray-900 text-gray-100 text-sm p-3 rounded-lg my-3 overflow-x-auto"><code class="block">${escapeHtml(m[2])}</code></pre>`;
+        html += esc(original.slice(last, m.index)).replace(/\n/g, "<br/>");
         html += `
         <div class="relative bg-gray-900 text-white text-sm rounded-xl overflow-x-auto my-3 p-4 font-mono">
-          <button class="absolute top-2 right-2 text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded copy-btn" data-content="${escapeHtml(m[2])}">
+          <button class="absolute top-2 right-2 text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded copy-btn" data-content="${esc(m[2])}">
             Copy
           </button>
-          <pre><code class="language-${m[1] || 'plaintext'}">${escapeHtml(m[2])}</code></pre>
+          <pre class="m-0"><code class="language-${m[1] || 'plaintext'}">${esc(m[2])}</code></pre>
         </div>`;
         last = fence.lastIndex;
       }
-      html += escapeHtml(original.slice(last)).replace(/\n/g, "<br/>");
+      html += esc(original.slice(last)).replace(/\n/g, "<br/>");
       node.innerHTML = html;
     });
   }
 
+  // ---- COPY & ACTION BUTTONS ----
   function wireCopyButtons() {
     document.querySelectorAll('.copy-btn').forEach(btn => {
       if (btn.dataset.wired) return;
@@ -556,105 +416,43 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener('click', () => {
         const text = btn.dataset.content || btn.closest('.ai-msg')?.innerText || '';
         navigator.clipboard?.writeText(text).then(
-          () => { btn.textContent = 'Copied'; setTimeout(()=>btn.textContent='Copy', 1000); },
-          () => { btn.textContent = 'Copy'; }
+          () => { btn.textContent = 'Copied'; setTimeout(()=>btn.innerHTML='📋 <span class="hidden sm:inline">Copy</span>', 900); },
+          () => { btn.innerHTML = '📋 <span class="hidden sm:inline">Copy</span>'; }
         );
       });
     });
   }
-
   function wireActionButtons() {
     document.querySelectorAll('.btn-regenerate').forEach(btn => {
       if (btn.dataset.wired) return;
       btn.dataset.wired = '1';
-      btn.addEventListener('click', () => {
-        btn.textContent = '↺';
-      });
+      btn.addEventListener('click', () => { btn.textContent = '↺'; /* hook your regenerate flow here */ });
     });
   }
 
-  // Right sidebar toggle
-  // function applyRightState() {
-  //   const collapsed = getFlag(RIGHT_KEY, false);
-  //   // Mobile (<768px): sidebar overlays, never shrink content
-  //   if (window.innerWidth < 768) {
-  //     if (collapsed) {
-  //       rightBar.classList.add("translate-x-full");
-  //     } else {
-  //       rightBar.classList.remove("translate-x-full");
-  //     }
-  //     mainContent.classList.remove("right-collapsed");
-  //     return;
-  //   }
-
-  //   // Desktop (>=768px): collapse pushes content
-  //   if (collapsed) {
-  //     rightBar.classList.add("translate-x-full");
-  //     chatForm.classList.replace("right-16", "right-0");
-  //     mainContent.classList.add("right-collapsed");
-  //     rightBtn.textContent = "»";
-  //   } else {
-  //     rightBar.classList.remove("translate-x-full");
-  //     chatForm.classList.replace("right-0", "right-16");
-  //     mainContent.classList.remove("right-collapsed");
-  //     rightBtn.textContent = "«";
-  //   }
-  // }
-  // if (rightBtn) {
-  //   rightBtn.addEventListener("click", () => {
-  //     setFlag(RIGHT_KEY, !getFlag(RIGHT_KEY, false));
-  //     applyRightState();
-  //   });
-  // }
-
-  // setFlag(RIGHT_KEY, true);
-  // applyRightState();
-
-  // ---- KEEP SPACE FOR FIXED INPUT ----
+  // ---- KEEP SPACE FOR COMPOSER ----
   function adjustBottomPadding() {
-    const h = chatForm ? chatForm.offsetHeight + 24 : 24;
+    const h = chatForm ? chatForm.offsetHeight + 16 : 16;
     mainContent.style.paddingBottom = `${h}px`;
-    scrollToBottom();
   }
   adjustBottomPadding();
   window.addEventListener("resize", adjustBottomPadding);
 
-  // initial wiring for any pre-rendered content
+  // ---- INITIALIZE EXISTING CONTENT ----
   formatTripleBackticks();
   wireCopyButtons();
   wireActionButtons();
   Prism.highlightAll();
-});
-function resizeInput(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = (textarea.scrollHeight) + 'px';
+  scrollToBottom();
+
+  function scrollToBottom() {
+    mainContent.scrollTop = mainContent.scrollHeight;
   }
 
-  // Optional: Reset size when input is empty
-  const inputBox = document.getElementById("user_input");
-
-  if (inputBox) {
-    inputBox.addEventListener("input", function () {
-      this.style.height = "auto";
-      this.style.height = Math.min(this.scrollHeight, 192) + "px"; // cap at 12rem
-    });
-
-    // Optional: reset height on blur if cleared
-    inputBox.addEventListener("blur", function () {
-      if (!this.value.trim()) {
-        this.style.height = "2.5rem";
-      }
-    });
-
-    // Initial adjust in case pre-filled
-    inputBox.style.height = "auto";
-    inputBox.style.height = inputBox.scrollHeight + "px";
-    }
-    document.getElementById("temperature-slider")?.addEventListener("input", (e) => {
-    const tempVal = e.target.value;
-    document.getElementById("temp-value").innerText = tempVal;
-    // Optionally send via AJAX to store per-session
+  // Temperature UI
+  document.getElementById("temperature-slider")?.addEventListener("input", (e) => {
+    document.getElementById("temp-value").innerText = e.target.value;
   });
+});
 </script>
 {% endblock %}
-
