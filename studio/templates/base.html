@@ -94,14 +94,17 @@
 </header>
 
   <!-- Layout -->
-   <!--div class="flex flex-1 pt-14 overflow-y-auto h-[calc(100vh-56px)]"-->
   <div class="flex flex-1 pt-28 overflow-y-auto h-[calc(100vh-56px)]"></div>
-  <!-- Full Sidebar -->
   <!-- Expanded Sidebar (unchanged unless you want Chat as direct link instead of dropdown) -->
-<aside id="sidebar"
-  class="fixed top-[56px] left-0 bottom-0 w-64 bg-gray-100 dark:bg-amoled border-r overflow-y-auto transition-transform duration-300 z-30">
+  <aside id="sidebar"
+    class="fixed top-[56px] left-0 bottom-0 w-64 bg-gray-100 dark:bg-amoled border-r overflow-y-auto transition-transform duration-300 z-30">
+  <!-- Full Sidebar -->
+  <!-- <aside id="sidebar"
+    class="fixed top-[56px] left-0 bottom-0 w-64 bg-gray-100 dark:bg-amoled border-r 
+          overflow-y-auto transition-transform duration-300 z-30
+          hidden md:block"> -->
   <div class="p-4 space-y-6 text-sm text-black dark:text-white">
-    <h3 class="text-xs uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+    <h3 class="text-xs uppercase font-semibold tracking-wide  text-gray-500 dark:text-gray-400 mb-2">
       Your Dashboard
     </h3>
     <!-- Direct Links -->
@@ -270,7 +273,9 @@
     <!-- Main Content Area -->
     <main id="main-content"
           class="ml-64 flex-1 px-4 py-6 pb-20 transition-all duration-300 overflow-y-auto">
-      {% block content %}{% endblock %}
+    <!-- <main id="main-content"
+      class="ml-0 md:ml-64 flex-1 px-2 sm:px-4 py-6 pb-20 transition-all duration-300 overflow-y-auto"> -->
+        {% block content %}{% endblock %}
     </main>
   </div>
 

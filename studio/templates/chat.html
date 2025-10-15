@@ -14,70 +14,88 @@
 {% endif %}
 
 <!-- MAIN CHAT AREA -->
-<div id="mainContent" class="ml-64 mr-16 pb-32 transition-all duration-200 overflow-y-auto">
+<div id="mainContent" class="w-full pb-32 transition-all duration-200 overflow-y-auto">
+
   {% if conversation %}
-  {% for entry in conversation %}
-    <!-- USER BUBBLE -->
-    {% if entry.role == "user" %}
-    <div class="flex items-start gap-3 mb-4">
-      <div class="flex-1">
-        <div class="flex items-center justify-between mb-1">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium transition-transform hover:scale-[1.01]">You</div>
-            <div class="text-xs text-gray-500">You</div>
-          </div>
-          <div class="text-xs text-gray-400">{{ entry.ts or '' }}</div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-blue-500">
-          <div class="whitespace-pre-wrap leading-relaxed text-sm">{{ entry.content | e }}</div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
+    {% for entry in conversation %}
 
-    <!-- AI BUBBLE -->
-    {% if entry.role == "assistant" %}
-    <div class="flex items-start gap-3 mb-4">
-      <div class="flex-1">
-        <div class="flex items-center justify-between mb-1">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium transition-transform hover:scale-[1.01]">AI</div>
-            <div class="text-xs text-gray-500">{{ agent | default('AI') }}</div>
-          </div>
-          <div class="flex items-center gap-2">
+      <!-- USER MESSAGE -->
+      {% if entry.role == "user" %}
+      <div class="flex items-start gap-3 mb-4">
+        <div class="flex-1">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">You</div>
+              <div class="text-xs text-gray-500">You</div>
+            </div>
             <div class="text-xs text-gray-400">{{ entry.ts or '' }}</div>
-            <button class="copy-btn text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200" data-content="{{ entry.content | e }}">Copy</button>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-blue-500 max-w-full sm:max-w-[90%] md:max-w-[75%]">
+            <div class="whitespace-pre-wrap leading-relaxed text-sm">{{ entry.content | e }}</div>
           </div>
         </div>
-        <div class="ai-msg bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow border-l-4 border-green-500">
-          <div class="mt-2 whitespace-pre-wrap leading-relaxed text-sm">{{ entry.content | e }}</div>
-        </div>
+      </div>
+      {% endif %}
 
-        <!-- quick actions -->
-        <div class="mt-2 flex gap-2 text-sm">
-          <button class="btn-like px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👍</button>
-          <button class="btn-dislike px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👎</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">↺ Regenerate</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📄 MD Conversion</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📝 Doc Conversion</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">✏️ Edit as Query</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">💾 Save for later</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">🗑️ Delete</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📌 Grab into context</button>
-          <button class="btn-regenerate text-xs px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">|||</button>
+      <!-- ASSISTANT MESSAGE -->
+      {% if entry.role == "assistant" %}
+      <div class="flex items-start gap-3 mb-4">
+        <div class="flex-1">
+          <!-- <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">AI</div>
+              <div class="text-xs text-gray-500">{{ agent | default('AI') }}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="text-xs text-gray-400">{{ entry.ts or '' }}</div>
+              <button class="copy-btn text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200" data-content="{{ entry.content | e }}">Copy</button>
+            </div>
+          </div> -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1 w-fit sm:w-[75%]">
+            <div class="flex items-center gap-2 mb-1 sm:mb-0">
+              <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">AI</div>
+              <div class="text-xs text-gray-500">{{ agent | default('AI') }}</div>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-400">
+              <span>{{ entry.ts or '' }}</span>
+              <button class="copy-btn px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">Copy</button>
+            </div>
+          </div>
+
+          <div class="ai-msg bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow border-l-4 border-green-500 max-w-full sm:max-w-[90%] md:max-w-[75%]">
+            <div class="mt-2 whitespace-pre-wrap leading-relaxed text-sm">{{ entry.content | e }}</div>
+          </div>
+
+          <!-- QUICK ACTION BUTTONS -->
+          <div class="mt-2 flex flex-wrap gap-2 text-xs sm:text-sm">
+            <button class="btn-like px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👍</button>
+            <button class="btn-dislike px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">👎</button>
+            <button class="btn-regenerate px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">↺ Regenerate</button>
+            <button class="btn-md px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📄 MD</button>
+            <button class="btn-doc px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📝 Doc</button>
+            <button class="btn-edit px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">✏️ Edit</button>
+            <button class="btn-save px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">💾 Save</button>
+            <button class="btn-del px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">🗑️ Delete</button>
+            <button class="btn-pin px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">📌 Context</button>
+            <button class="btn-like px-2 py-1 bg-transparent rounded hover:bg-gray-200 dark:hover:bg-gray-600">[Copy]</button>
+          </div>
         </div>
       </div>
-    </div>
-    {% endif %}
-  {% endfor %}
-{% else %}
-  <div class="text-center text-gray-500 py-12">No messages yet — say hi 👋</div>
-{% endif %}
+      {% endif %}
+
+    {% endfor %}
+  {% else %}
+    <div class="text-center text-gray-500 py-12">No messages yet — say hi 👋</div>
+  {% endif %}
 </div>
 <form id="chatForm"
       method="post"
       action="/chat/model/{{ agent }}/send"
-      class="fixed bottom-0 left-64 right-16 bg-white dark:bg-gray-800 p-4 flex gap-3 border-t border-gray-200 dark:border-gray-700 z-50 transition-all duration-200">
+      class="fixed bottom-0 left-0 md:left-64 right-0 bg-white dark:bg-gray-800 p-3 sm:p-4 flex gap-2 sm:gap-3 border-t border-gray-200 dark:border-gray-700 z-50 transition-all duration-200">
+<!-- <form id="chatForm"
+      method="post"
+      action="/chat/model/{{ agent }}/send"
+      class="fixed bottom-0 left-0 md:left-64 right-0 md:right-16 bg-white dark:bg-gray-800 p-3 sm:p-4 flex gap-2 sm:gap-3 border-t border-gray-200 dark:border-gray-700 z-50"> -->
 
   <!-- Hidden conversation id if present -->
   {% if conversation_id %}
@@ -112,13 +130,25 @@
 </form>
 
 <!-- RIGHT SIDEBAR -->
-<aside id="rightSidebar"
-       class="fixed top-[56px] right-0 bottom-0 w-64 bg-white dark:bg-gray-900 shadow-lg border-l border-gray-300 dark:border-gray-700 p-4 flex flex-col gap-4 transition-transform duration-300 transform translate-x-0 z-40">
-  <button id="toggleRightSidebarBtn"
+  <!-- <aside id="rightSidebar"
+    class="fixed top-[56px] right-0 bottom-0 
+          w-64 md:w-64  /* desktop fixed width */
+          bg-white dark:bg-gray-900 shadow-lg border-l border-gray-300 dark:border-gray-700 
+          p-4 flex flex-col gap-4 transition-transform duration-300 
+          transform translate-x-full md:translate-x-0 z-40 md:relative"> -->
+  <aside id="rightSidebar"
+    class="fixed top-[56px] right-0 bottom-0 
+            w-64 bg-white dark:bg-gray-900 shadow-lg border-l border-gray-300 dark:border-gray-700 
+            p-4 flex flex-col gap-4 transition-transform duration-300 
+            transform translate-x-full z-40">
+  <!-- <button id="toggleRightSidebarBtn"
         class="absolute -left-8 top-1/2 -translate-y-1/2 bg-gray-700 text-white rounded-l px-2 py-1 text-sm hover:bg-gray-800">
       «
+  </button> -->
+  <button id="toggleRightSidebarBtn"
+    class="absolute -left-8 top-1/2 -translate-y-1/2 bg-gray-700 text-white rounded-l px-2 py-1 text-sm hover:bg-gray-800">
+    «
   </button>
-
   <h1 class="text-lg uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">
       Studio Configuration
   </h1>
@@ -145,7 +175,7 @@
     <label for="temperature-slider">Creativity (Temperature)</label>
     <input type="range" id="temperature-slider" min="0" max="1" step="0.01" value="{{ temperature|default(0.7) }}">
     <span id="temp-value">{{ temperature|default(0.7) }}</span>
-  </div>
+  </div>z
   <!-- System Prompt Editor -->
   <h3 class="text-xs uppercase font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-2">
       Edit Prompt
@@ -156,6 +186,7 @@
     <button id="save-system-prompt">Save</button>
   </div>
 </aside>
+<div id="sidebarBackdrop" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
 <style>
   :root {
     --header-h: 56px;               /* Height of the fixed header */
@@ -165,9 +196,11 @@
 
   /* Main content layout fix under sticky header */
   #mainContent {
+    max-width: 100%;
     padding-top: calc(var(--header-h) + 0.75rem);
     scroll-padding-top: var(--header-h);
     transition: width var(--transition-dur) ease;
+    overflow-x: hidden;
   }
 
   /* Remove unintentional spacing on first child */
@@ -259,6 +292,41 @@
     transition: height 0.2s ease;
     box-sizing: border-box;
   }
+  /* Sidebar behavior */
+  #rightSidebar {
+    max-width: 100%;
+  }
+
+  /* On mobile: sidebar overlays (full screen) */
+  @media (max-width: 767px) {
+    #rightSidebar {
+      width: 100% !important;
+      position: fixed !important;
+      top: var(--header-h);
+      right: 0;
+      bottom: 0;
+    }
+    #mainContent {
+      margin-right: 0 !important;
+      width: 100% !important;
+    }
+  }
+
+  /* On desktop: sidebar pushes main content */
+  @media (min-width: 768px) {
+    #mainContent.right-collapsed {
+      width: calc(100% - var(--sidebar-w));
+    }
+  }
+
+.copy-btn {
+  transition: all 0.2s ease;
+}
+.copy-btn:hover {
+  background-color: #3b82f6; /* Tailwind blue-500 */
+  color: #fff;
+}
+
 </style>
 {% endblock %}
 
@@ -282,11 +350,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const sendSpinner= document.getElementById("sendSpinner");
   const rightBar   = document.getElementById("rightSidebar");
   const rightBtn   = document.getElementById("toggleRightSidebarBtn");
+  const backdrop = document.getElementById("sidebarBackdrop");
 
-  // ---- SMALL LOCAL HELPERS ----
+  // ---- SIDEBAR LOGIC ----
   const RIGHT_KEY = "ui:rightCollapsed";
-  const getFlag = (k, d=false) => (localStorage.getItem(k) ?? (d ? "1":"0")) === "1";
+  const getFlag = (k, d = true) => (localStorage.getItem(k) ?? (d ? "1" : "0")) === "1";
   const setFlag = (k, v) => localStorage.setItem(k, v ? "1" : "0");
+
+  function applySidebarState() {
+    const isRightCollapsed = getFlag(RIGHT_KEY, true);
+    const isMobile = window.innerWidth < 768;
+
+    // --- Right Sidebar Logic ---
+    if (isRightCollapsed) {
+      rightBar.classList.add("translate-x-full");
+      rightBtn.textContent = "«"; // Show "open" icon
+    } else {
+      rightBar.classList.remove("translate-x-full");
+      rightBtn.textContent = "»"; // Show "close" icon
+    }
+
+    // --- Main Content and Form Margin Logic ---
+    if (isMobile) {
+      // On mobile, sidebars are overlays. Content is always full-width.
+      mainContent.style.marginRight = '0';
+      chatForm.style.right = '0';
+      // Show backdrop only if a sidebar is open
+      backdrop.classList.toggle('hidden', isRightCollapsed);
+    } else {
+      // On desktop, the right sidebar "pushes" the content.
+      const rightMargin = isRightCollapsed ? '0' : '16rem'; // 16rem = w-64
+      mainContent.style.marginRight = rightMargin;
+      chatForm.style.right = rightMargin;
+      backdrop.classList.add('hidden'); // Never show backdrop on desktop
+    }
+  }
+
+  // --- Event Listeners ---
+  if (rightBtn) {
+    rightBtn.addEventListener("click", () => {
+      setFlag(RIGHT_KEY, !getFlag(RIGHT_KEY, true));
+      applySidebarState();
+    });
+  }
+
+  // Close sidebar if backdrop is clicked on mobile
+  backdrop.addEventListener('click', () => {
+    setFlag(RIGHT_KEY, true); // Collapse the sidebar
+    applySidebarState();
+  });
+
+  // Re-apply styles on window resize
+  window.addEventListener('resize', applySidebarState);
+
+  // Initial state setup
+  applySidebarState();
 
   // ---- ENTER TO SEND ----
   if (userInput) {
@@ -456,27 +574,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Right sidebar toggle
-  function applyRightState() {
-    const collapsed = getFlag(RIGHT_KEY, false);
-    if (collapsed) {
-      rightBar.classList.add("translate-x-full");
-      chatForm.classList.replace("right-16", "right-0");
-      mainContent.classList.add("right-collapsed");
-      rightBtn.textContent = "»";
-    } else {
-      rightBar.classList.remove("translate-x-full");
-      chatForm.classList.replace("right-0", "right-16");
-      mainContent.classList.remove("right-collapsed");
-      rightBtn.textContent = "«";
-    }
-  }
-  if (rightBtn) {
-    rightBtn.addEventListener("click", () => {
-      setFlag(RIGHT_KEY, !getFlag(RIGHT_KEY, false));
-      applyRightState();
-    });
-  }
-  applyRightState();
+  // function applyRightState() {
+  //   const collapsed = getFlag(RIGHT_KEY, false);
+  //   // Mobile (<768px): sidebar overlays, never shrink content
+  //   if (window.innerWidth < 768) {
+  //     if (collapsed) {
+  //       rightBar.classList.add("translate-x-full");
+  //     } else {
+  //       rightBar.classList.remove("translate-x-full");
+  //     }
+  //     mainContent.classList.remove("right-collapsed");
+  //     return;
+  //   }
+
+  //   // Desktop (>=768px): collapse pushes content
+  //   if (collapsed) {
+  //     rightBar.classList.add("translate-x-full");
+  //     chatForm.classList.replace("right-16", "right-0");
+  //     mainContent.classList.add("right-collapsed");
+  //     rightBtn.textContent = "»";
+  //   } else {
+  //     rightBar.classList.remove("translate-x-full");
+  //     chatForm.classList.replace("right-0", "right-16");
+  //     mainContent.classList.remove("right-collapsed");
+  //     rightBtn.textContent = "«";
+  //   }
+  // }
+  // if (rightBtn) {
+  //   rightBtn.addEventListener("click", () => {
+  //     setFlag(RIGHT_KEY, !getFlag(RIGHT_KEY, false));
+  //     applyRightState();
+  //   });
+  // }
+
+  // setFlag(RIGHT_KEY, true);
+  // applyRightState();
 
   // ---- KEEP SPACE FOR FIXED INPUT ----
   function adjustBottomPadding() {
