@@ -1,163 +1,268 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="p-6 space-y-4">
+<div class="p-6 space-y-6 animate-fadeIn">
 
-  <!-- Model Selection Block -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Available Models</h2>
-    <div class="flex flex-wrap gap-2">
+  <!-- Model Selection -->
+  <div>
+    <h2 class="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-100">Available Models</h2>
+    <div class="flex flex-wrap gap-3">
       {% for model_name in models.keys() %}
-        <a href="/chat/model/{{ model_name }}" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition">
+        <a href="/chat/model/{{ model_name }}"
+           class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
           {{ model_name }}
         </a>
       {% endfor %}
     </div>
   </div>
 
-  <!-- Vertical stacked dashboard cards -->
-  <div class="space-y-6">
+  <!-- Dashboard Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-  <!-- Updated Recent Affairs Section -->
+    <!-- User Snapshot -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4 flex flex-col justify-between">
+      <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-3">Your Usage Snapshot</h3>
+      <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+        <li>🧩 Active Model: <span id="active-model" class="font-semibold text-blue-500">{{ favorite_model or "Gemini Pro" }}</span></li>
+        <li>💬 Messages Sent: <span id="messages-sent" class="font-semibold">{{ total_messages or 0 }}</span></li>
+        <li>⏱️ Avg Response Time: <span id="avg-response" class="font-semibold text-green-500">{{ avg_response or "0.9s" }}</span></li>
+        <li>🗓️ Last Session: <span id="last-session" class="font-semibold">{{ last_active or "N/A" }}</span></li>
+      </ul>
+    </div>
+
+    <!-- Assistant Activity -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
+      <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-3">Assistant Insights</h3>
+      <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+        <li>🎯 Accuracy Level: <span class="font-semibold text-indigo-500">{{ accuracy or "High" }}</span></li>
+        <li>🧠 Creativity Mode: <span class="font-semibold">{{ creativity_mode or "Balanced" }}</span></li>
+        <li>📈 Engagement Rate: <span class="font-semibold text-yellow-600">{{ engagement or "92%" }}</span></li>
+      </ul>
+    </div>
+
+    <!-- Weather (Placeholder) -->
+    <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl shadow p-4 flex flex-col justify-between">
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Weather</h3>
+        <p id="weather-city" class="text-sm opacity-80">Fetching...</p>
+        <p id="weather-temp" class="text-2xl font-bold">--°C</p>
+      </div>
+      <p id="weather-desc" class="text-sm mt-2 opacity-90">---</p>
+    </div>
+
+    <!-- Tips / Quick Actions -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4 flex flex-col justify-between">
+      <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-3">Quick Actions</h3>
+      <ul id="tip-list" class="text-sm text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
+        <li>Switch to “Precise Mode” for analytical tasks ⚙️</li>
+        <li>Save your chat for later 📦</li>
+        <li>Access context tools in the sidebar 🧭</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Recent Affairs -->
   <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
-    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Recent Affairs (via NYTimes)</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Recent Affairs</h2>
+      <div class="flex items-center gap-2">
+        <select id="region-select" class="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:text-gray-100">
+          <option value="in" selected>🇮🇳 India</option>
+          <option value="us">🇺🇸 US</option>
+          <option value="uk">🇬🇧 UK</option>
+          <option value="au">🇦🇺 Australia</option>
+          <option value="ca">🇨🇦 Canada</option>
+          <option value="sg">🇸🇬 Singapore</option>
+          <option value="fr">🇫🇷 France</option>
+          <option value="de">🇩🇪 Germany</option>
+        </select>
+
+        <select id="provider-select" class="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:text-gray-100">
+          <option value="auto" selected>Auto</option>
+          <option value="google_rss">Google RSS</option>
+          <option value="nyt">NYTimes</option>
+          <option value="newsapi">NewsAPI</option>
+        </select>
+      </div>
+    </div>
+
     <div id="news-scroll" class="flex gap-4 overflow-x-auto pb-2">
-        <!-- News cards will load here -->
+      <div class="text-gray-500 text-sm">Loading news...</div>
     </div>
-   </div>
+  </div>
+
+  <script>
+    async function loadNews() {
+      const region = document.getElementById('region-select')?.value || 'in';
+      const provider = document.getElementById('provider-select')?.value || 'auto';
+      const container = document.getElementById('news-scroll');
+      container.innerHTML = '<div class="text-gray-500 text-sm">Loading news...</div>';
+
+      try {
+        const res = await fetch(`/api/news?region=${region}&provider=${provider}&limit=6`);
+        const data = await res.json();
+        container.innerHTML = '';
+
+        (data.news || []).forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'min-w-[300px] max-w-sm bg-white dark:bg-gray-900 rounded-xl shadow p-4 flex-shrink-0';
+
+          if (item.image) {
+            const img = document.createElement('img');
+            img.src = item.image;
+            img.alt = item.title;
+            img.className = 'w-full h-40 object-cover rounded-md mb-3';
+            card.appendChild(img);
+          }
+
+          const link = document.createElement('a');
+          link.href = item.link;
+          link.target = '_blank';
+          link.className = 'text-blue-600 hover:underline dark:text-blue-400 text-sm font-medium';
+          link.textContent = item.title;
+
+          const date = document.createElement('div');
+          date.className = 'text-xs text-gray-500 mt-2';
+          date.textContent = new Date(item.published).toLocaleString();
+
+          card.append(link, date);
+          container.appendChild(card);
+        });
+
+        // Show source tag
+        if (data.source) {
+          const tag = document.createElement('div');
+          tag.className = 'text-xs text-gray-400 mt-4';
+          tag.textContent = `Source: ${data.source.toUpperCase()} (${data.region.toUpperCase()})`;
+          container.appendChild(tag);
+        }
+      } catch (err) {
+        container.innerHTML = '<div class="text-red-500 text-sm">Error loading news.</div>';
+        console.error('News load failed:', err);
+      }
+    }
+
+    document.getElementById('region-select')?.addEventListener('change', loadNews);
+    document.getElementById('provider-select')?.addEventListener('change', loadNews);
+    loadNews();
+  </script>
 
 
-  <!-- Usage Stats Section -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-    <!-- Monthly Usage Pie -->
+  <!-- Usage Charts -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
-        <h3 class="text-md font-semibold text-center text-gray-800 dark:text-gray-100 mb-2">Monthly Token Usage</h3>
-        <div class="flex justify-center">
-        <canvas id="monthlyChart" class="w-40 h-40"></canvas>
-        </div>
+      <h3 class="text-md font-semibold text-center text-gray-800 dark:text-gray-100 mb-2">Monthly Token Usage</h3>
+      <div class="flex justify-center"><canvas id="monthlyChart" class="w-40 h-40"></canvas></div>
     </div>
 
-    <!-- Daily Usage Pie -->
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
-        <h3 class="text-md font-semibold text-center text-gray-800 dark:text-gray-100 mb-2">Daily Token Usage</h3>
-        <div class="flex justify-center">
-        <canvas id="dailyChart" class="w-40 h-40"></canvas>
-        </div>
+      <h3 class="text-md font-semibold text-center text-gray-800 dark:text-gray-100 mb-2">Daily Token Usage</h3>
+      <div class="flex justify-center"><canvas id="dailyChart" class="w-40 h-40"></canvas></div>
     </div>
 
-    <!-- Weekly Usage Bar -->
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
-        <h3 class="text-md font-semibold text-center text-gray-800 dark:text-gray-100 mb-2">Weekly Token Usage</h3>
-        <div class="flex justify-center">
-        <canvas id="weeklyChart" class="w-full h-40"></canvas>
-        </div>
+      <h3 class="text-md font-semibold text-center text-gray-800 dark:text-gray-100 mb-2">Weekly Token Usage</h3>
+      <div class="flex justify-center"><canvas id="weeklyChart" class="w-full h-40"></canvas></div>
     </div>
+  </div>
 
-    </div>
-
-  <!-- Chat List Section -->
-  <div class="w-full bg-white dark:bg-gray-900 rounded-xl shadow p-4">
+  <!-- Chat History -->
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
     <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Chat History</h3>
     <ul class="space-y-2 text-sm">
       <li><a href="#" class="text-blue-600 hover:underline dark:text-blue-400">Session: 27th July - Gemini Pro</a></li>
       <li><a href="#" class="text-blue-600 hover:underline dark:text-blue-400">Session: 26th July - Claude</a></li>
     </ul>
   </div>
- </div>
-
 
 </div>
 
-<!-- Chart.js Script -->
+<!-- Script Section -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    async function loadNews() {
+  // ---- Load News ----
+  async function loadNews() {
     const res = await fetch('/api/news');
     const data = await res.json();
-
     const container = document.getElementById('news-scroll');
     container.innerHTML = '';
-    //container.innerHTML = '<div class="text-gray-500 text-sm">Loading news...</div>';
-
     data.news.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'min-w-[300px] max-w-sm bg-white dark:bg-gray-900 rounded-xl shadow p-4 flex-shrink-0';
-
-        if (item.image) {
-            const img = document.createElement('img');
-            img.src = item.image;
-            img.alt = item.title;
-            img.className = 'w-full h-40 object-cover rounded-md mb-3';
-            card.appendChild(img);
-        }
-
-        const link = document.createElement('a');
-        link.href = item.link;
-        link.target = '_blank';
-        link.className = 'text-blue-600 hover:underline dark:text-blue-400 text-sm font-medium';
-        link.textContent = item.title;
-
-        const date = document.createElement('div');
-        date.className = 'text-xs text-gray-500 mt-2';
-        date.textContent = new Date(item.published).toLocaleDateString();
-
-        card.appendChild(link);
-        card.appendChild(date);
-        container.appendChild(card);
+      const card = document.createElement('div');
+      card.className = 'min-w-[300px] max-w-sm bg-white dark:bg-gray-900 rounded-xl shadow p-4 flex-shrink-0';
+      if (item.image) {
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.title;
+        img.className = 'w-full h-40 object-cover rounded-md mb-3';
+        card.appendChild(img);
+      }
+      const link = document.createElement('a');
+      link.href = item.link;
+      link.target = '_blank';
+      link.className = 'text-blue-600 hover:underline dark:text-blue-400 text-sm font-medium';
+      link.textContent = item.title;
+      const date = document.createElement('div');
+      date.className = 'text-xs text-gray-500 mt-2';
+      date.textContent = new Date(item.published).toLocaleDateString();
+      card.append(link, date);
+      container.appendChild(card);
     });
-    }
-    loadNews();
+  }
+  loadNews();
 
-  // Monthly Usage Pie
+  // ---- Weather (dummy for now) ----
+  document.getElementById('weather-city').textContent = 'Kolkata, IN';
+  document.getElementById('weather-temp').textContent = '29°C';
+  document.getElementById('weather-desc').textContent = 'Partly Cloudy ☁️';
+
+  // ---- Charts ----
   new Chart(document.getElementById('monthlyChart'), {
     type: 'pie',
-    data: {
-      labels: ['Used', 'Remaining'],
-      datasets: [{
-        data: [42000, 8000],  // Example values
-        backgroundColor: ['#60A5FA', '#E5E7EB'],
-      }]
+    data: { labels: ['Used', 'Remaining'],
+      datasets: [{ data: [42000, 8000], backgroundColor: ['#60A5FA', '#E5E7EB'] }]
     },
-    options: {
-      plugins: { legend: { position: 'bottom' } },
-    }
+    options: { plugins: { legend: { position: 'bottom' } } }
   });
 
-  // Daily Usage Pie
   new Chart(document.getElementById('dailyChart'), {
     type: 'pie',
-    data: {
-      labels: ['Used', 'Remaining'],
-      datasets: [{
-        data: [5200, 2800],  // Example values
-        backgroundColor: ['#34D399', '#E5E7EB'],
-      }]
+    data: { labels: ['Used', 'Remaining'],
+      datasets: [{ data: [5200, 2800], backgroundColor: ['#34D399', '#E5E7EB'] }]
     },
-    options: {
-      plugins: { legend: { position: 'bottom' } },
-    }
+    options: { plugins: { legend: { position: 'bottom' } } }
   });
 
-  // Weekly Bar Chart
   new Chart(document.getElementById('weeklyChart'), {
     type: 'bar',
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Tokens Used',
+    data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{ label: 'Tokens Used',
         data: [6000, 7000, 5000, 8000, 3000, 4000, 7500],
-        backgroundColor: '#FBBF24',
-        borderRadius: 6,
-      }]
+        backgroundColor: '#FBBF24', borderRadius: 6 }]
     },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, ticks: { color: '#6B7280' } },
-        x: { ticks: { color: '#6B7280' } }
-      }
+    options: { plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { color: '#6B7280' } },
+                x: { ticks: { color: '#6B7280' } } }
     }
   });
 </script>
+
+<style>
+  @keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(8px); } 
+    to { opacity: 1; transform: translateY(0); } 
+  }
+  .animate-fadeIn { animation: fadeIn 0.6s ease-out both; }
+
+  #news-scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  #news-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.4);
+    border-radius: 4px;
+  }
+  #news-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.7);
+  }
+</style>
 {% endblock %}
